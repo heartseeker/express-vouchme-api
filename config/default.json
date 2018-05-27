@@ -1,0 +1,3 @@
+{
+    "database": "mongodb://default/express-vouchme"
+}
