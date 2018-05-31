@@ -193,6 +193,21 @@ router.post('/social', authenticate, async(req, res) => {
     return res.send(user);
 });
 
+// deleting social schema
+router.delete('/social/:id', authenticate, async(req, res) => {
+    const id = req.params.id;
+    let user = await User.findOne({ _id: req.user._id });
+
+    const i = user.social.findIndex(o => o._id == id);
+    
+    if (i < 0) {
+        return res.status(400).send('Bad request');
+    }
+    user.social.splice(i, 1);
+    await user.save();
+    res.send(user.social);
+});
+
 router.post('/mail', (req, res) => {
     // Generate test SMTP service account from ethereal.email
     // Only needed if you don't have a real mail account for testing
