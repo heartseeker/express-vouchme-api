@@ -278,8 +278,8 @@ router.post('/contact', (req, res) => {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-               user: 'alexinformationtech@gmail.com',
-               pass: 'WAKEMEUPWEAK'
+               user: 'alex.strauss06@gmail.com',
+               pass: 'yns123456'
            }
        });
     
