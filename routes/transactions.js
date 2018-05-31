@@ -133,4 +133,17 @@ router.get('/social', async (req, res) => {
     res.send(data);
 });
 
+
+
+router.get('/public', async (req, res) => {
+    const users = await User.count({});
+    const verified = await User.count({ verified: 1 });
+    const transactions = await Transaction.count({});
+    const success = await Transaction.count({ status: 2 });
+
+    await Promise.all([users, verified, transactions, success]);
+
+    res.send({ users, verified, transactions, success });
+});
+
 module.exports = router;
