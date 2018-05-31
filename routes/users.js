@@ -268,4 +268,37 @@ router.post('/gmail', (req, res) => {
 });
 
 
+router.post('/contact', (req, res) => {
+
+    const name = req.body.name;
+    const email = req.body.email;
+    const subject = req.body.subject;
+    const message = req.body.message;
+
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+               user: 'alexinformationtech@gmail.com',
+               pass: 'WAKEMEUPWEAK'
+           }
+       });
+    
+    const mailOptions = {
+        from: email, // sender address
+        to: 'alexinformationtech@gmail.com', // list of receivers
+        subject: subject, // Subject line
+        html: message// plain text body
+    };
+
+    transporter.sendMail(mailOptions, function (err, info) {
+        if(err)
+          console.log(err)
+        else {
+            res.send({ ok: 'ok' });
+        }
+     });
+
+});
+
+
 module.exports = router;
