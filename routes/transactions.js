@@ -74,7 +74,7 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 // count all social vouches
-router.get('/social', authenticate, async (req, res) => {
+router.get('/social', async (req, res) => {
 
     const to = req.query.to;
     let user;
@@ -117,7 +117,7 @@ router.get('/social', authenticate, async (req, res) => {
 
     data['total'] = 0;
 
-    channels = await Channel.find({ $or: [{ status: 1 }, { user: req.user._id }] });
+    channels = await Channel.find({ $or: [{ status: 1 }, { user: user._id }] });
     const p = transactions.map((v, index) => {
         const i = channels.findIndex(o => String(o._id) === String(v._id));
         transactions[index].name = channels[i].name;

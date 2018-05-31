@@ -238,7 +238,34 @@ router.post('/mail', (req, res) => {
             // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
         });
     });
-})
+});
+
+router.post('/gmail', (req, res) => {
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+               user: 'alexinformationtech@gmail.com',
+               pass: 'WAKEMEUPWEAK'
+           }
+       });
+    
+    const mailOptions = {
+        from: 'sender@email.com', // sender address
+        to: 'alexinformationtech@gmail.com', // list of receivers
+        subject: 'Subject of your email', // Subject line
+        html: '<p>Your html here</p>'// plain text body
+    };
+
+    transporter.sendMail(mailOptions, function (err, info) {
+        if(err)
+          console.log(err)
+        else {
+            console.log(info);
+            res.send('success send');
+        }
+     });
+
+});
 
 
 module.exports = router;
