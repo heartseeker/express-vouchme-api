@@ -59,15 +59,7 @@ router.post('/', async (req, res) => {
     let user = new User(_.pick(req.body, ['username', 'password']));
     let profile = _.pick(req.body, ['first_name', 'last_name']);
     user['profile'] = profile;
-    user['social'] = [{
-        name: 'Facebook',
-    }, {
-        name: 'OLX',
-    }, {
-        name: 'EBay',
-    }, {
-        name: 'Amazon',
-    }];
+
     try {
         user = await user.save();
     } catch (err) {
