@@ -8,6 +8,8 @@ const authenticate = require('../middleware/authenticate');
 const nodemailer = require('nodemailer');
 const multer  = require('multer');
 const path = require('path');
+const https = require('https');
+
 
 // get current profile
 router.get('/me', authenticate, (req, res) => {
@@ -305,6 +307,35 @@ router.post('/contact', (req, res) => {
         }
      });
 
+});
+
+
+router.post('/facebook', async(req, res) => {
+    const data = _.pick(req.body, ['email', 'firstName', 'lastName', 'photoUrl']);
+    let user = await User.findOne({ username: data.email });
+    let token;
+    // if already registered send token
+    if (user) {
+        token = user.generateAuthToken();
+        return res.header('x-auth', token).send({ token });
+    }
+
+    // if not yet registered. save it to database
+    user = new User({ username: data.email });
+    let profile = { first_name: data.firstName, last_name: data.lastName, photo_url: data.photoUrl };
+    user['profile'] = profile;
+
+    try {
+        user = await user.save({ validateBeforeSave: false });
+    } catch (err) {
+        return res.status(400).send(err);
+    }
+
+    const id = user.id;
+    const update = await User.findOneAndUpdate({_id: id}, { $set: { 'alias': id } });
+
+    token = user.generateAuthToken();
+    return res.header('x-auth', token).send({ token });
 });
 
 

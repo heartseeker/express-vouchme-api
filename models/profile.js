@@ -57,6 +57,10 @@ const ProfileSchema = new Schema({
     billing: {
         type: String,
         trim: true,
+    },
+    photo_url: {
+        type: String,
+        trim: true,
     }
 });
 
