@@ -65,14 +65,39 @@ router.post('/', async (req, res) => {
     try {
         user = await user.save();
     } catch (err) {
-        res.status(400).send(err);
+        return res.status(400).send(err);
     }
 
     const id = user.id;
     const update = await User.findOneAndUpdate({_id: id}, { $set: { 'alias': id } });
 
     const token = user.generateAuthToken();
-    res.header('x-auth', token).send();
+    return res.header('x-auth', token).send();
+});
+
+router.post('/signup', async(req, res) => {
+    let userData = _.pick(req.body, ['username', 'alias', 'password']);
+    const profileData = _.pick(req.body, ['first_name', 'last_name', 'middle_name', 'phone', 'address', 'region', 'zip', 'gender', 'date']);
+    userData = userData;
+    userData['profile'] = profileData;
+    let user = new User(userData);
+
+    try {
+        user = await user.save();
+        if (!user) {
+            throw 'Error creating account';
+        }
+    } catch(err) {
+        return res.status(500).send({ error: err });
+    }
+
+    if (userData.alias) {
+        const id = user.id;
+        const update = await User.findOneAndUpdate({_id: id}, { $set: { 'alias': id } });
+    }
+    
+    const token = user.generateAuthToken();
+    return res.header('x-auth', token).send();
 });
 
 // getting public info of a user
@@ -253,8 +278,8 @@ router.post('/gmail', (req, res) => {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-               user: 'alexinformationtech@gmail.com',
-               pass: 'WAKEMEUPWEAK'
+               user: 'alex.strauss06@gmail.com',
+               pass: 'yns123456'
            }
        });
     

@@ -20,7 +20,6 @@ const ProfileSchema = new Schema({
     middle_name: {
         type: String,
         trim: true,
-        minlength: 3
     },
     phone: {
         type: String,
