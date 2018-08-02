@@ -9,11 +9,17 @@ const nodemailer = require('nodemailer');
 const multer  = require('multer');
 const path = require('path');
 const https = require('https');
-
+const Email = require('email-templates');
+const Social = require('../models/social');
 
 // get current profile
 router.get('/me', authenticate, (req, res) => {
     res.send(req.user);
+});
+
+// get current profile
+router.get('/alex', async (req, res) => {
+    res.send('TEST!!!');
 });
 
 // search user
@@ -188,7 +194,25 @@ router.post('/upload', authenticate , async function (req, res) {
 
 })
 
-// updating social info
+// get social data base on id
+router.get('/social/:id', authenticate, async(req, res) => {
+    const id = req.params['id'];
+    try {
+        user = await User.findOne({ 'social._id': id }, {'social.$': 1});
+
+        if (!user) {
+            throw 'Invalid request';
+        }
+
+        return res.status(200).send(user['social'][0]);
+
+    } catch (err) {
+        return res.status(400).send(err);
+    }
+});
+
+
+// add social info
 router.post('/social', authenticate, async(req, res) => {
     let user;
     try {
@@ -218,6 +242,32 @@ router.post('/social', authenticate, async(req, res) => {
     }
     
     return res.send(user);
+});
+
+// edit social info
+router.put('/social/:id', authenticate, async(req, res) => {
+    const id = req.params['id'];
+    let user;
+    try {
+        user = await User.findOne({ _id: req.user._id }).select('social -_id');
+
+        if (!user) {
+            throw 'Invalid request';
+        }
+
+        const index = user['social'].findIndex((e) => { return e._id == id });
+        user['social'][index]['name'] = req.body.name;
+        user['social'][index]['url'] = req.body.url;
+        
+        console.log('index', user['social'][index]);
+
+        // return res.send(user['social'][index]);
+        return res.send(req.body);
+
+    } catch (err) {
+        return res.status(400).send(err);
+    }
+
 });
 
 // deleting social schema
@@ -287,17 +337,51 @@ router.post('/gmail', (req, res) => {
         from: 'sender@email.com', // sender address
         to: 'alexinformationtech@gmail.com', // list of receivers
         subject: 'Subject of your email', // Subject line
-        html: '<p>Your html here</p>'// plain text body
+        // html: '<p>Your html here</p>'// plain text body
+        // html: require('../templates/register.htm')
     };
 
-    transporter.sendMail(mailOptions, function (err, info) {
-        if(err)
-          console.log(err)
-        else {
-            console.log(info);
-            res.send('success send');
+    // transporter.sendMail(mailOptions, function (err, info) {
+    //     if(err)
+    //       console.log(err)
+    //     else {
+    //         console.log(info);
+    //         res.send('success send');
+    //     }
+    //  });
+
+    const email = new Email({
+        message: {
+          from: 'niftylettuce@gmail.com'
+        },
+        // uncomment below to send emails in development/test env:
+        send: true,
+        // transport: transporter
+        transport: {
+            host: 'smtp.gmail.com',
+            port: 587,
+            auth: {
+                user: 'alex.strauss06@gmail.com',
+                pass: 'yns123456'
+            }
         }
-     });
+      });
+      
+      email
+        .send({
+          template: '../emails/registration',
+          message: {
+            to: 'alexinformationtech@gmail.com'
+          },
+          locals: {
+            name: 'Elon'
+          }
+        })
+        .then((data) => {
+            console.log(data);
+            res.send('success');
+        })
+        .catch(console.error);
 
 });
 
