@@ -1,7 +1,7 @@
 const mongoose = require('../db/mongoose');
 const Schema = mongoose.Schema;
 
-const InflameSchema = new Schema({
+const InfameSchema = new Schema({
     from: {
         type: Schema.Types.ObjectId, ref: 'User',
         required: true,
@@ -14,4 +14,4 @@ const InflameSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Inflame', InflameSchema);
+module.exports = mongoose.model('Infame', InfameSchema);

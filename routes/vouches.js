@@ -4,16 +4,16 @@ const mongoose = require('mongoose');
 const _ = require('lodash');
 const authenticate = require('../middleware/authenticate');
 const Vouch = require('../models/vouch');
-const Inflame = require('../models/inflame');
+const Infame = require('../models/infame');
 
 router.post('/', authenticate, async(req, res) => {
     const to = req.body.to;
     let v = await Vouch.findOne({ from: req.user._id, to: to});
 
-    let i = await Inflame.findOne({ from: req.user._id, to: to});
+    let i = await Infame.findOne({ from: req.user._id, to: to});
 
     if (i) {
-        return res.status(200).send({ error: 'You already inflame this person' });
+        return res.status(200).send({ error: 'You already infame this person' });
     }
 
     // toggle vouch me to remove

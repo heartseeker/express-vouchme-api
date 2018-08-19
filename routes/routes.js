@@ -10,6 +10,6 @@ router.use('/auth', require('./auth'));
 router.use('/channels', require('./channels'));
 router.use('/transactions', require('./transactions'));
 router.use('/vouches', require('./vouches'));
-router.use('/inflames', require('./inflames'));
+router.use('/infames', require('./infames'));
 
 module.exports = router;

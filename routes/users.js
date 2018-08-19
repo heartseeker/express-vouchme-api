@@ -124,6 +124,7 @@ router.put('/', authenticate, async (req, res) => {
 
     let user = await User.findOne({ _id: req.user._id });
 
+    req.body.profile['picture'] = user.profile.picture;
     req.body.profile['id1'] = user.profile.id1;
     req.body.profile['id2'] = user.profile.id2;
     req.body.profile['billing'] = user.profile.billing;
@@ -254,20 +255,28 @@ router.put('/social/:id', authenticate, async(req, res) => {
         if (!user) {
             throw 'Invalid request';
         }
-
-        const index = user['social'].findIndex((e) => { return e._id == id });
-        user['social'][index]['name'] = req.body.name;
-        user['social'][index]['url'] = req.body.url;
-        
-        console.log('index', user['social'][index]);
-
-        // return res.send(user['social'][index]);
-        return res.send(req.body);
-
     } catch (err) {
         return res.status(400).send(err);
     }
 
+    const index = user['social'].findIndex((e) => { return e._id == id });
+    user['social'][index]['name'] = req.body.name;
+    user['social'][index]['url'] = req.body.url;
+    const social = user['social'];
+    
+    try {
+        user = await User.findOneAndUpdate({ _id: req.user._id }, {
+            $set: { social }
+        },
+        { runValidators: true, new: true }).select('-password');
+        if (!user) {
+            throw 'Invalid request';
+        }
+    } catch (err) {
+        return res.status(400).send(err);
+    }
+
+    return res.send(user);
 });
 
 // deleting social schema
