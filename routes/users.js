@@ -97,13 +97,13 @@ router.post('/signup', async(req, res) => {
         return res.status(500).send({ error: err });
     }
 
-    if (userData.alias) {
+    if (!userData.alias) {
         const id = user.id;
         const update = await User.findOneAndUpdate({_id: id}, { $set: { 'alias': id } });
     }
     
     const token = user.generateAuthToken();
-    return res.header('x-auth', token).send();
+    return res.header('x-auth', token).send({token});
 });
 
 // getting public info of a user
@@ -129,9 +129,11 @@ router.put('/', authenticate, async (req, res) => {
     req.body.profile['id2'] = user.profile.id2;
     req.body.profile['billing'] = user.profile.billing;
 
+    const alias = req.body.alias ? req.body.alias : req.user._id;
+
     user = await User.findOneAndUpdate(
         { _id: req.user._id}, 
-        { $set: { 'profile': req.body.profile, 'alias': req.body.alias, 'username': req.body.username  } }, 
+        { $set: { 'profile': req.body.profile, 'alias': alias, 'username': req.body.username  } }, 
         { new: true, runValidators: true }
     );
     res.send(user);
