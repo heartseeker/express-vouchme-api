@@ -446,7 +446,9 @@ router.post('/facebook', async(req, res) => {
     user = new User({ username: data.email });
     const image = String(data.photoUrl).replace('picture?type=normal', 'picture?type=large');
 
-    user.download(image, 'fb-main-picture.jpg', function(){
+    const destination = 'public/uploads/' + req.user._id + 'fb-main-picture.jpg';
+
+    user.download(image, destination, function(){
         console.log('done');
     });
     
