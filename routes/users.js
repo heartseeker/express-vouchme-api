@@ -453,9 +453,15 @@ router.post('/facebook', async(req, res) => {
     try {
         user = await user.save({ validateBeforeSave: false });
 
-        const destination = `public/uploads/${user._id}/${image_name}`;
+        const destination = `public/uploads/${user._id}`;
 
-        user.download(image, destination, function(){
+        if (!fs.existsSync(destination)){
+            fs.mkdirSync(destination);
+        }
+        
+        const imageFullPath = `${destination}/${image_name}`;
+
+        user.download(image, imageFullPath, function(){
             console.log('done');
         });
 
