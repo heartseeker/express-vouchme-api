@@ -11,6 +11,8 @@ const path = require('path');
 const https = require('https');
 const Email = require('email-templates');
 const Social = require('../models/social');
+const fs = require('fs');
+const request = require('request');
 
 // get current profile
 router.get('/me', authenticate, (req, res) => {
@@ -443,7 +445,12 @@ router.post('/facebook', async(req, res) => {
     // if not yet registered. save it to database
     user = new User({ username: data.email });
     const image = String(data.photoUrl).replace('picture?type=normal', 'picture?type=large');
-    let profile = { first_name: data.firstName, last_name: data.lastName, picture: image };
+
+    user.download(image, 'fb-main-picture.jpg', function(){
+        console.log('done');
+    });
+    
+    let profile = { first_name: data.firstName, last_name: data.lastName, picture: 'fb-main-picture.jpg' };
     user['profile'] = profile;
 
     try {
