@@ -442,7 +442,8 @@ router.post('/facebook', async(req, res) => {
 
     // if not yet registered. save it to database
     user = new User({ username: data.email });
-    let profile = { first_name: data.firstName, last_name: data.lastName, photo_url: data.photoUrl };
+    const image = String(data.photoUrl).replace('picture?type=normal', 'picture?type=large');
+    let profile = { first_name: data.firstName, last_name: data.lastName, photo_url: image };
     user['profile'] = profile;
 
     try {
