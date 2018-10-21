@@ -444,19 +444,21 @@ router.post('/facebook', async(req, res) => {
 
     // if not yet registered. save it to database
     user = new User({ username: data.email });
-    const image = String(data.photoUrl).replace('picture?type=normal', 'picture?type=large');
-
-    const destination = 'public/uploads/' + req.user._id + '/fb-main-picture.jpg';
-
-    user.download(image, destination, function(){
-        console.log('done');
-    });
+    const image_name = 'fb-main-picture.jpg';
+    const image = String(data.photoUrl).replace('picture?type=normal', 'picture?type=large');    
     
-    let profile = { first_name: data.firstName, last_name: data.lastName, picture: 'fb-main-picture.jpg' };
+    let profile = { first_name: data.firstName, last_name: data.lastName, picture: image_name };
     user['profile'] = profile;
 
     try {
         user = await user.save({ validateBeforeSave: false });
+
+        const destination = `public/uploads/${user._id}/${image_name}`;
+
+        user.download(image, destination, function(){
+            console.log('done');
+        });
+
     } catch (err) {
         return res.status(400).send(err);
     }
